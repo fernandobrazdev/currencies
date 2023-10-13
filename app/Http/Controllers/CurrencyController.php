@@ -47,17 +47,15 @@ class CurrencyController extends Controller
             $response = $this->client->get($this->url);
             $content = $response->getBody()->getContents();
             $crawler = new Crawler($content);
-            // $filter[0] = 'code';
-            // $filter[1] = 'GBP';
-            // $filter[0] = 'code_list';
-            // $filter[1] = ['GBP', 'AUD'];
-            // $filter[0] = 'number';
-            // $filter[1] = '036';
+
+            //set filter params
             $filter[0] = $request->type;
             $filter[1] = $request->value;
 
+            //start crawler
             $table = $crawler->filter('.wikitable>tbody')->filter('tr')->each(function ($tr, $tr_index) use ($filter) {
 
+                //crawling table data
                 $row = $tr->filter('td')->each(function ($td, $td_index) use ($tr_index, $filter) {
 
                     if ($td_index == 4) {
@@ -92,6 +90,7 @@ class CurrencyController extends Controller
             });
 
             $result = [];
+            // apply filters
             foreach ($table as $row) {
                 if (count($row)) {
                     if ($filter[0] == 'code' && $row[0] == $filter[1]) {
